@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --disableHostCheck --host 0.0.0.0 --port 4203",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint"
@@ -17,18 +17,108 @@
     "@angular/forms": "~10.1.1",
     "@angular/platform-browser": "~10.1.1",
     "@angular/platform-browser-dynamic": "~10.1.1",
+    "@angular/pwa": "^0.803.9",
     "@angular/router": "~10.1.1",
+    "@angular/service-worker": "^8.2.2",
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "@ng-bootstrap/ng-bootstrap": "^5.1.0",
+    "@ng-select/ng-select": "^3.0.7",
+    "@ngrx/data": "^8.2.0",
+    "@ngrx/effects": "^8.2.0",
+    "@ngrx/entity": "^8.2.0",
+    "@ngrx/router-store": "^8.2.0",
+    "@ngrx/store": "^8.2.0",
+    "@wnry/angular-lib": "https://dev.wnry.ch/bitbucket/projects/WNRYW/repos/wnry-angular-lib/raw/release/wnry-angular-lib.tgz",
+    "bootstrap": "^4.3.1",
+    "flag-icon-css": "^3.3.0",
+    "flatpickr": "^4.6.3",
+    "font-awesome": "^4.7.0",
+    "hammerjs": "^2.0.8",
+    "icheck-bootstrap": "^3.0.1",
+    "ionicons": "^2.0.0",
+    "jquery": "^3.4.1",
+    "lodash-es": "^4.17.15",
+    "ngx-social-button": "^1.0.4",
+    "popper.js": "^1.15.0",
     "rxjs": "~6.6.0",
+    "schematics-utilities": "^2.0.2",
+    "simple-line-icons": "^2.4.1",
     "tslib": "^2.0.0",
+    "uuid": "^3.3.2",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1001.1",
     "@angular/cli": "~10.1.1",
     "@angular/compiler-cli": "~10.1.1",
+    "@angular/language-service": "^8.2.2",
+    "@angular/localize": "^10.1.1",
+    "@ngrx/schematics": "^8.2.0",
+    "@ngrx/store-devtools": "^8.2.0",
     "@types/node": "^12.11.1",
+    "cheerio": "^1.0.0-rc.3",
+    "codelyzer": "^5.0.0",
+    "conventional-changelog-cli": "^2.0.23",
+    "cpx": "^1.5.0",
+    "ng-packagr": "^5.4.0",
+    "protractor": "~5.4.0",
+    "schemats": "^3.0.3",
+    "standard-version": "^7.0.0",
     "ts-node": "~8.3.0",
+    "tsickle": "^0.37.0",
     "tslint": "~6.1.0",
-    "typescript": "~4.0.2"
+    "typescript": "~4.0.2",
+    "webpack-bundle-analyzer": "^3.5.1",
+    "webpack-cli": "^3.3.9"
+  },
+  "standard-version": {
+    "commitUrlFormat": "{{host}}/projects/OP/repos/bal-opencv-nx/commits/{{hash}}",
+    "compareUrlFormat": "{{host}}/projects/OP/repos/bal-opencv-nx/commits?since={{previousTag}}&until={{currentTag}}",
+    "types": [
+      {
+        "type": "feat",
+        "section": "Features"
+      },
+      {
+        "type": "fix",
+        "section": "Bug Fixes"
+      },
+      {
+        "type": "chore",
+        "section": "Chore",
+        "hidden": true
+      },
+      {
+        "type": "docs",
+        "section": "Documentation",
+        "hidden": true
+      },
+      {
+        "type": "style",
+        "section": "Style",
+        "hidden": true
+      },
+      {
+        "type": "refactor",
+        "section": "Refactor",
+        "hidden": true
+      },
+      {
+        "type": "perf",
+        "section": "Performance",
+        "hidden": true
+      },
+      {
+        "type": "test",
+        "section": "Testing",
+        "hidden": true
+      }
+    ],
+    "scripts": {
+      "prerelease": "ng build --prod",
+      "postbump": "ng build --prod ",
+      "prechangelog": "git add --all . && git commit -m 'chore(release): release build'",
+      "posttag": "git push --tags && git push && echo 'Successfully released version $npm_package_version!'"
+    }
   }
 }
