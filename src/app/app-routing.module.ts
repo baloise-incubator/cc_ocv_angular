@@ -29,6 +29,10 @@ const routes: Routes = [
         outlet: 'rightHeader'
       },
       {
+        path: 'camera-test',
+        loadChildren: () => import('./pages/camera-test/camera-test-page.module').then(m => m.OCVCameraTestPageModule)
+      },
+      {
         path: '**',
         component: WNRYHttp404PageComponent
       }
