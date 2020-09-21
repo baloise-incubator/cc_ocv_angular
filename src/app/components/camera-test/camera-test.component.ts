@@ -11,6 +11,10 @@ export class OCVCameraTestComponent implements OnInit {
 
 	videoWidth = 0;
 	videoHeight = 0;
+	cv: any;
+
+	streaming: boolean = false;
+	openCVLoaded: boolean = false;
 
 	constraints = {
 		video: {
@@ -24,8 +28,10 @@ export class OCVCameraTestComponent implements OnInit {
 
 	ngOnInit() {
 		this.startCamera();
-		this.addJsToElement('/assets/opencv.js').onload = (teste) => {
+		this.cv = this.addJsToElement('/assets/opencv.js').onload = (teste) => {
 			console.log('OpenCV.js loaded', teste);
+			this.openCVLoaded = true;
+			this.faceDetect();
 		};
 	}
 
@@ -55,7 +61,13 @@ export class OCVCameraTestComponent implements OnInit {
 		this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
 	}
 
-	changeCam() {}
+	toggleStream() {
+		this.streaming = !this.streaming;
+	}
+
+	changeCam() {
+		//TODO
+	}
 
 	addJsToElement(src: string): HTMLScriptElement {
 		const script = document.createElement('script');
@@ -63,5 +75,64 @@ export class OCVCameraTestComponent implements OnInit {
 		script.src = src;
 		this.renderer.appendChild(document.body, script);
 		return script;
+	}
+
+	faceDetect() {
+		let video: any = document.getElementById('video');
+		let src = new this.cv.Mat(video.height, video.width, this.cv.CV_8UC4);
+		let dst = new this.cv.Mat(video.height, video.width, this.cv.CV_8UC4);
+		let gray = new this.cv.Mat();
+		let cap = new this.cv.VideoCapture(video);
+		let faces = new this.cv.RectVector();
+		let classifier = new this.cv.CascadeClassifier();
+
+		console.log('Video', video);
+		console.log('src', src);
+		console.log('dst', dst);
+		console.log('gray', gray);
+		console.log('cap', cap);
+		console.log('faces', faces);
+		console.log('classifier', classifier);
+
+		// load pre-trained classifiers
+		classifier.load('/assets/haarcascade_frontalface_default.xml');
+
+		const FPS = 3;
+		function processVideo() {
+			try {
+				if (!this.streaming) {
+					// clean and stop.
+					src.delete();
+					dst.delete();
+					gray.delete();
+					faces.delete();
+					classifier.delete();
+					return;
+				}
+				let begin = Date.now();
+				// start processing.
+				cap.read(src);
+				src.copyTo(dst);
+				this.cv.cvtColor(dst, gray, this.cv.COLOR_RGBA2GRAY, 0);
+				// detect faces.
+				classifier.detectMultiScale(gray, faces, 1.1, 3, 0);
+				// draw faces.
+				for (let i = 0; i < faces.size(); ++i) {
+					let face = faces.get(i);
+					let point1 = new this.cv.Point(face.x, face.y);
+					let point2 = new this.cv.Point(face.x + face.width, face.y + face.height);
+					this.cv.rectangle(dst, point1, point2, [255, 0, 0, 255]);
+				}
+				this.cv.imshow('canvas', dst);
+				// schedule the next one.
+				let delay = 1000 / FPS - (Date.now() - begin);
+				setTimeout(processVideo, delay);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+
+		// schedule the first one.
+		setTimeout(processVideo, 0);
 	}
 }
