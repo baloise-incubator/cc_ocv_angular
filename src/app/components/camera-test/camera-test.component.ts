@@ -1,58 +1,67 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'ocv-camera-test',
-  templateUrl: './camera-test.component.html',
-  styleUrls: ['./camera-test.component.scss']
+	selector: 'ocv-camera-test',
+	templateUrl: './camera-test.component.html',
+	styleUrls: ['./camera-test.component.scss'],
 })
 export class OCVCameraTestComponent implements OnInit {
+	@ViewChild('video', { static: true }) videoElement: ElementRef;
+	@ViewChild('canvas', { static: true }) canvas: ElementRef;
 
-  @ViewChild('video', { static: true }) videoElement: ElementRef;
-  @ViewChild('canvas', { static: true }) canvas: ElementRef;
+	videoWidth = 0;
+	videoHeight = 0;
 
-  videoWidth = 0;
-  videoHeight = 0;
+	constraints = {
+		video: {
+			facingMode: 'environment',
+			width: { ideal: 4096 },
+			height: { ideal: 2160 },
+		},
+	};
 
+	constructor(private renderer: Renderer2) {}
 
-  constraints = {
-    video: {
-      facingMode: "environment",
-      width: { ideal: 4096 },
-      height: { ideal: 2160 }
-    }
-  };
+	ngOnInit() {
+		this.startCamera();
+		this.addJsToElement('/assets/opencv.js').onload = (teste) => {
+			console.log('OpenCV.js loaded', teste);
+		};
+	}
 
-  constructor(private renderer: Renderer2) { }
+	startCamera() {
+		if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+			navigator.mediaDevices.getUserMedia(this.constraints).then(this.attachVideo.bind(this)).catch(this.handleError);
+		} else {
+			alert('Sorry, camera not available.');
+		}
+	}
 
-  ngOnInit() {
-    this.startCamera();
-  }
+	handleError(error) {
+		console.log('Error: ', error);
+	}
 
+	attachVideo(stream) {
+		this.renderer.setProperty(this.videoElement.nativeElement, 'srcObject', stream);
+		this.renderer.listen(this.videoElement.nativeElement, 'play', (event) => {
+			this.videoHeight = this.videoElement.nativeElement.videoHeight;
+			this.videoWidth = this.videoElement.nativeElement.videoWidth;
+		});
+	}
 
-  startCamera() {
-    if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      navigator.mediaDevices.getUserMedia(this.constraints).then(this.attachVideo.bind(this)).catch(this.handleError);
-    } else {
-      alert('Sorry, camera not available.');
-    }
-  }
+	capture() {
+		this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
+		this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
+		this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
+	}
 
-  handleError(error) {
-    console.log('Error: ', error);
-  }
+	changeCam() {}
 
-  attachVideo(stream) {
-    this.renderer.setProperty(this.videoElement.nativeElement, 'srcObject', stream);
-    this.renderer.listen(this.videoElement.nativeElement, 'play', (event) => {
-      this.videoHeight = this.videoElement.nativeElement.videoHeight;
-      this.videoWidth = this.videoElement.nativeElement.videoWidth;
-    });
-  }
-
-  capture() {
-    this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
-    this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
-    this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
-  }
-
+	addJsToElement(src: string): HTMLScriptElement {
+		const script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = src;
+		this.renderer.appendChild(document.body, script);
+		return script;
+	}
 }
