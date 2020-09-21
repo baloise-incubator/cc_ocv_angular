@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+declare var cv: any;
 
 @Component({
 	selector: 'ocv-camera-test',
@@ -11,7 +12,6 @@ export class OCVCameraTestComponent implements OnInit {
 
 	videoWidth = 0;
 	videoHeight = 0;
-	cv: any;
 
 	streaming: boolean = false;
 	openCVLoaded: boolean = false;
@@ -24,15 +24,41 @@ export class OCVCameraTestComponent implements OnInit {
 		},
 	};
 
+	/**
+	 * Loads a JavaScript file and returns a Promise for when it is loaded
+	 */
+	loadScript = (src) => {
+		return new Promise((resolve, reject) => {
+			const script = document.createElement('script');
+			script.type = 'text/javascript';
+			script.onload = resolve;
+			script.onerror = reject;
+			script.src = src;
+			document.head.append(script);
+		});
+	};
+
 	constructor(private renderer: Renderer2) {}
 
 	ngOnInit() {
 		this.startCamera();
-		this.cv = this.addJsToElement('/assets/opencv.js').onload = (teste) => {
-			console.log('OpenCV.js loaded', teste);
-			this.openCVLoaded = true;
-			this.faceDetect();
-		};
+		this.loadScript('/assets/opencv.js').then((x) => {
+			console.log('OpenCV geladen');
+			console.log('x', cv);
+			cv.then((x) => {
+				console.log('xx', cv);
+				this.openCVLoaded = true;
+				this.faceDetect(x);
+			});
+		});
+		// let cvTemp = (this.addJsToElement('/assets/opencv.js').onload = (teste) => {
+		// 	console.log('OpenCV.js loaded', teste);
+		// 	this.openCVLoaded = true;
+		// 	console.log('cv', cv);
+		// 	console.log('cv2', cvTemp);
+
+		// 	this.faceDetect();
+		// });
 	}
 
 	startCamera() {
@@ -69,36 +95,21 @@ export class OCVCameraTestComponent implements OnInit {
 		//TODO
 	}
 
-	addJsToElement(src: string): HTMLScriptElement {
-		const script = document.createElement('script');
-		script.type = 'text/javascript';
-		script.src = src;
-		this.renderer.appendChild(document.body, script);
-		return script;
-	}
-
-	faceDetect() {
-		let video: any = document.getElementById('video');
-		let src = new this.cv.Mat(video.height, video.width, this.cv.CV_8UC4);
-		let dst = new this.cv.Mat(video.height, video.width, this.cv.CV_8UC4);
-		let gray = new this.cv.Mat();
-		let cap = new this.cv.VideoCapture(video);
-		let faces = new this.cv.RectVector();
-		let classifier = new this.cv.CascadeClassifier();
-
-		console.log('Video', video);
-		console.log('src', src);
-		console.log('dst', dst);
-		console.log('gray', gray);
-		console.log('cap', cap);
-		console.log('faces', faces);
-		console.log('classifier', classifier);
+	faceDetect(cv: any) {
+		let video: any = this.videoElement.nativeElement;
+		let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+		let dst = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+		let gray = new cv.Mat();
+		let cap = new cv.VideoCapture(video);
+		let faces = new cv.RectVector();
+		let classifier = new cv.CascadeClassifier();
 
 		// load pre-trained classifiers
 		classifier.load('/assets/haarcascade_frontalface_default.xml');
-
-		const FPS = 3;
+		console.log('classifier', classifier);
+		const FPS = 30;
 		function processVideo() {
+			console.log('streaming', this.streaming);
 			try {
 				if (!this.streaming) {
 					// clean and stop.
@@ -113,17 +124,17 @@ export class OCVCameraTestComponent implements OnInit {
 				// start processing.
 				cap.read(src);
 				src.copyTo(dst);
-				this.cv.cvtColor(dst, gray, this.cv.COLOR_RGBA2GRAY, 0);
+				cv.cvtColor(dst, gray, cv.COLOR_RGBA2GRAY, 0);
 				// detect faces.
 				classifier.detectMultiScale(gray, faces, 1.1, 3, 0);
 				// draw faces.
 				for (let i = 0; i < faces.size(); ++i) {
 					let face = faces.get(i);
-					let point1 = new this.cv.Point(face.x, face.y);
-					let point2 = new this.cv.Point(face.x + face.width, face.y + face.height);
-					this.cv.rectangle(dst, point1, point2, [255, 0, 0, 255]);
+					let point1 = new cv.Point(face.x, face.y);
+					let point2 = new cv.Point(face.x + face.width, face.y + face.height);
+					cv.rectangle(dst, point1, point2, [255, 0, 0, 255]);
 				}
-				this.cv.imshow('canvas', dst);
+				cv.imshow('canvas', dst);
 				// schedule the next one.
 				let delay = 1000 / FPS - (Date.now() - begin);
 				setTimeout(processVideo, delay);
