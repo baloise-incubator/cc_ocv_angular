@@ -9,9 +9,14 @@ declare var cv: any;
 export class OCVCameraToggleComponent implements OnInit {
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
 	@ViewChild('canvas', { static: true }) canvas: ElementRef;
+	@ViewChild('select', { static: true }) select: ElementRef;
 
 	videoWidth = 0;
 	videoHeight = 0;
+
+	actualCam = 0;
+
+	currentStream: any;
 
 	streaming: boolean = false;
 	openCVLoaded: boolean = false;
@@ -21,32 +26,27 @@ export class OCVCameraToggleComponent implements OnInit {
 			facingMode: 'environment',
 			width: { ideal: 4096 },
 			height: { ideal: 2160 },
+			deviceId: null,
 		},
-	};
-
-	/**
-	 * Loads a JavaScript file and returns a Promise for when it is loaded
-	 */
-	loadScript = (src) => {
-		return new Promise((resolve, reject) => {
-			const script = document.createElement('script');
-			script.type = 'text/javascript';
-			script.onload = resolve;
-			script.onerror = reject;
-			script.src = src;
-			document.head.append(script);
-		});
 	};
 
 	constructor(private renderer: Renderer2) {}
 
 	ngOnInit() {
 		this.startCamera();
+		this.listCameras();
 	}
 
 	startCamera() {
 		if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-			navigator.mediaDevices.getUserMedia(this.constraints).then(this.attachVideo.bind(this)).catch(this.handleError);
+			navigator.mediaDevices
+				.getUserMedia(this.constraints)
+				.then((stream) => {
+					this.attachVideo(stream);
+					this.currentStream = stream;
+					console.log('');
+				})
+				.catch(this.handleError);
 		} else {
 			alert('Sorry, camera not available.');
 		}
@@ -74,7 +74,38 @@ export class OCVCameraToggleComponent implements OnInit {
 		this.streaming = !this.streaming;
 	}
 
+	listCameras() {
+		var select = this.select.nativeElement;
+		select.innerHtml = '';
+		//select.appendChild(document.createElement('option'));
+		let count = 1;
+		navigator.mediaDevices.enumerateDevices().then((md) => {
+			md.forEach((mediaDevice) => {
+				if (mediaDevice.kind === 'videoinput') {
+					const option = document.createElement('option');
+					option.value = mediaDevice.deviceId;
+					const label = mediaDevice.label || `Camera ${count++}`;
+					const textNode = document.createTextNode(label);
+					option.appendChild(textNode);
+					select.appendChild(option);
+				}
+			});
+		});
+	}
+
 	changeCam() {
-		//TODO
+		var select = this.select.nativeElement;
+		if (typeof this.currentStream !== 'undefined') {
+			this.currentStream.getTracks().forEach((track) => {
+				track.stop();
+			});
+		}
+		if (select.value === '') {
+			this.constraints.video.facingMode = 'environment';
+			this.constraints.video.deviceId = null;
+		} else {
+			this.constraints.video.deviceId = { exact: select.value };
+		}
+		this.startCamera();
 	}
 }

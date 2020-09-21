@@ -4,13 +4,15 @@
 			<video #video class="vid" autoplay></video>&nbsp;
 			<canvas #canvas class="vid"></canvas>
 		</div>
-		<div class="pb-2">
+		<div class="p-1">
 			<button class="btn btn-primary" (click)="capture()">Capture Image</button>&nbsp;&nbsp;
 			<button class="btn btn-primary" (click)="changeCam()">Change Cam</button>&nbsp;&nbsp;
 			<button *ngIf="openCVLoaded" class="btn btn-primary" (click)="toggleStream()">
 				<ng-container *ngIf="streaming">Stop</ng-container>
-				<ng-container *ngIf="!streaming">Start</ng-container>
-			</button>
+				<ng-container *ngIf="!streaming">Start</ng-container></button
+			><br />
+			<select #select class="form-control" id="camera-list"> </select>
 		</div>
+		<div></div>
 	</div>
 </div>
