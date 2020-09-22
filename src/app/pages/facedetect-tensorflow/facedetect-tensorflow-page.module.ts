@@ -4,6 +4,7 @@ import { WNRYPageWithTitleModule } from '@wnry/angular-lib';
 import { RouterModule, Routes } from '@angular/router';
 import { OCVFacedetectTensorFlowPageComponent } from './facedetect-tensorflow-page.component';
 import { OCVFacedetectTensorFlowContainerModule } from '../../features/facedetect/tensorflow/container/facedetect-tensorflow/facedetect-tensorflow-container.module';
+import { OCVCameraSelectorContainerModule } from '../../features/camera-selector/container/camera-selector/camera-selector-container.module';
 
 const routes: Routes = [
 	{
@@ -17,6 +18,7 @@ const routes: Routes = [
 		RouterModule.forChild(routes),
 		WNRYPageWithTitleModule,
 		OCVFacedetectTensorFlowContainerModule,
+		OCVCameraSelectorContainerModule,
 	],
 	declarations: [OCVFacedetectTensorFlowPageComponent],
 })
