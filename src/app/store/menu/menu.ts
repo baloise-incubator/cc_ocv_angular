@@ -5,21 +5,28 @@ export const menu: IWNRYNavItem = {
 	url: '/',
 	children: [
 		{
-			label: 'Gesichtserkennung',
-			url: '/facedetect',
-			path: 'facedetect',
+			label: 'AI Erkennung',
+			url: '/detect',
+			path: 'detect',
 			icon: 'fa fa-user-circle',
 			children: [
 				{
 					label: 'OpenCV',
-					url: '/facedetect/opencv',
+					url: '/detect/opencv',
 					path: 'opencv',
 					icon: 'fa fa-smile',
 					children: [],
 				},
 				{
-					label: 'Tensorflow',
-					url: '/facedetect/tensorflow',
+					label: 'TF Face',
+					url: '/detect/facedetect',
+					path: 'tensorflow',
+					icon: 'fa fa-meh',
+					children: [],
+				},
+				{
+					label: 'TF Handpose',
+					url: '/detect/handpose',
 					path: 'tensorflow',
 					icon: 'fa fa-meh',
 					children: [],

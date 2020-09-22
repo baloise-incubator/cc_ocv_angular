@@ -1,13 +1,13 @@
 import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild, Input } from '@angular/core';
-import * as blazeface from '@tensorflow-models/blazeface';
+import * as handpose from '@tensorflow-models/handpose';
 import '@tensorflow/tfjs-backend-webgl';
 
 @Component({
-	selector: 'ocv-facedetect-tensorflow',
-	templateUrl: './facedetect-tensorflow.component.html',
-	styleUrls: ['./facedetect-tensorflow.component.scss'],
+	selector: 'ocv-handpose-tensorflow',
+	templateUrl: './handpose-tensorflow.component.html',
+	styleUrls: ['./handpose-tensorflow.component.scss'],
 })
-export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
+export class OCVHandposeTensorFlowComponent implements OnInit, AfterViewInit {
 	@Input()
 	set camera(c: MediaDeviceInfo) {
 		this.changeCam(c.deviceId);
@@ -50,13 +50,11 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 
 	async loadModel() {
 		this.loading = true;
-		this.model = await blazeface.load();
+		this.model = await handpose.load();
 		this.loading = false;
 
 		setInterval(async () => {
-			//blazeface
-			const returnTensors = false; // Pass in `true` to get tensors back, rather than values.
-			const predictions = await this.model.estimateFaces(this.videoElement.nativeElement, returnTensors);
+			const predictions = await this.model.estimateHands(this.videoElement.nativeElement);
 
 			this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
 			this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
@@ -64,38 +62,59 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 
 			if (predictions.length > 0) {
 				for (let i = 0; i < predictions.length; i++) {
-					const start = predictions[i].topLeft;
-					const end = predictions[i].bottomRight;
-					const size = [end[0] - start[0], end[1] - start[1]];
-
-					const eye_right = predictions[i].landmarks[0];
-					const eye_left = predictions[i].landmarks[1];
-					const nose = predictions[i].landmarks[2];
-					const mouth = predictions[i].landmarks[3];
-					const ear_right = predictions[i].landmarks[4];
-					const ear_left = predictions[i].landmarks[5];
-
 					var ctx = this.canvas.nativeElement.getContext('2d');
-					// Render a rectangle over each detected face.
-					//ctx.globalAlpha = 0.3;
-					//ctx.fillStyle = 'blue';
-					//ctx.fillRect(start[0], start[1], size[0], size[1]);
-					this.drawdot(ctx, eye_right);
-					this.drawdot(ctx, eye_left);
+					const keypoints = predictions[i].landmarks;
+
+					// Log hand keypoints.
+					for (let i = 0; i < keypoints.length; i++) {
+						this.drawdot(ctx, keypoints[i]);
+					}
+					// Daumen
+					this.drawline(ctx, keypoints[0], keypoints[1]);
+					this.drawline(ctx, keypoints[1], keypoints[2]);
+					this.drawline(ctx, keypoints[2], keypoints[3]);
+					this.drawline(ctx, keypoints[3], keypoints[4]);
+					//Zeigefinger
+					this.drawline(ctx, keypoints[0], keypoints[5]);
+					this.drawline(ctx, keypoints[5], keypoints[6]);
+					this.drawline(ctx, keypoints[6], keypoints[7]);
+					this.drawline(ctx, keypoints[7], keypoints[8]);
+					//Mittelfinger
+					this.drawline(ctx, keypoints[0], keypoints[9]);
+					this.drawline(ctx, keypoints[9], keypoints[10]);
+					this.drawline(ctx, keypoints[10], keypoints[11]);
+					this.drawline(ctx, keypoints[11], keypoints[12]);
+					//Ringfinger
+					this.drawline(ctx, keypoints[0], keypoints[13]);
+					this.drawline(ctx, keypoints[13], keypoints[14]);
+					this.drawline(ctx, keypoints[14], keypoints[15]);
+					this.drawline(ctx, keypoints[15], keypoints[16]);
+					//Ringfinger
+					this.drawline(ctx, keypoints[0], keypoints[17]);
+					this.drawline(ctx, keypoints[17], keypoints[18]);
+					this.drawline(ctx, keypoints[18], keypoints[19]);
+					this.drawline(ctx, keypoints[19], keypoints[20]);
 				}
 			}
-		}, 100);
+		}, 200);
+	}
+
+	drawline(ctx, coords_from, coords_to) {
+		ctx.beginPath();
+		ctx.moveTo(coords_from[0], coords_from[1]);
+		ctx.lineTo(coords_to[0], coords_to[1]);
+		ctx.stroke();
 	}
 
 	drawdot(ctx, coords) {
 		ctx.beginPath();
-		ctx.arc(coords[0], coords[1], 50, 0, 2 * Math.PI);
+		ctx.arc(coords[0], coords[1], 5, 0, 2 * Math.PI);
 		ctx.globalAlpha = 0.3;
 		ctx.fillStyle = 'blue';
 		ctx.fill();
 		ctx.globalAlpha = 1;
 		ctx.lineWidth = 5;
-		ctx.strokeStyle = '#FFFFFF';
+		ctx.strokeStyle = '#0000FF';
 		ctx.stroke();
 	}
 

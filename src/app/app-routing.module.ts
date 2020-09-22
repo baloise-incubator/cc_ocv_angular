@@ -33,19 +33,27 @@ const routes: Routes = [
 				outlet: 'rightHeader',
 			},
 			{
-				path: 'facedetect/opencv',
+				path: 'detect/opencv',
 				loadChildren: () =>
 					import('./pages/facedetect-opencv/facedetect-opencv-page.module').then(
 						(m) => m.OCVFacedetectOpenCVPageModule
 					),
 			},
 			{
-				path: 'facedetect/tensorflow',
+				path: 'detect/facedetect',
 				loadChildren: () =>
 					import('./pages/facedetect-tensorflow/facedetect-tensorflow-page.module').then(
 						(m) => m.OCVFacedetectTensorFlowPageModule
 					),
 			},
+			{
+				path: 'detect/handpose',
+				loadChildren: () =>
+					import('./pages/handpose-tensorflow/handpose-tensorflow-page.module').then(
+						(m) => m.OCVHandposeTensorFlowPageModule
+					),
+			},
+
 			{
 				path: '**',
 				component: WNRYHttp404PageComponent,
