@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { selectWNRYRouteId } from '@wnry/angular-lib';
 
 @Component({
-	selector: 'ocv-camera-toggle-page',
-	templateUrl: './camera-toggle-page.component.html',
-	styleUrls: ['./camera-toggle-page.component.scss'],
+	selector: 'ocv-facedetect-opencv-page',
+	templateUrl: './facedetect-opencv-page.component.html',
+	styleUrls: ['./facedetect-opencv-page.component.scss'],
 })
-export class OCVCameraTogglePageComponent implements OnInit {
-	title: string = 'camera-test';
+export class OCVFacedetectOpenCVPageComponent implements OnInit {
+	title: string = 'facedetect-opencv';
 	routeId$: Observable<any>;
 
 	constructor(private store: Store<any>) {}

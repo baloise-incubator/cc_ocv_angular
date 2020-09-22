@@ -40,7 +40,9 @@ const routes: Routes = [
 			{
 				path: 'camera-toggle',
 				loadChildren: () =>
-					import('./pages/camera-toggle/camera-toggle-page.module').then((m) => m.OCVCameraTogglePageModule),
+					import('./pages/facedetect-tensorflow/facedetect-tensorflow-page.module').then(
+						(m) => m.OCVCameraTogglePageModule
+					),
 			},
 			{
 				path: '**',

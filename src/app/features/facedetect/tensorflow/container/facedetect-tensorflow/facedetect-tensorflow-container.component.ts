@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { EntityCollectionService, EntityServices } from '@ngrx/data';
 
 @Component({
-	selector: 'ocv-camera-toggle-container',
-	templateUrl: './camera-toggle-container.component.html',
-	styleUrls: ['./camera-toggle-container.component.scss'],
+	selector: 'ocv-facedetect-tensorflow-container',
+	templateUrl: './facedetect-tensorflow-container.component.html',
+	styleUrls: ['./facedetect-tensorflow-container.component.scss'],
 })
-export class OCVCameraToggleContainerComponent implements OnInit {
+export class OCVFacedetectTensorFlowContainerComponent implements OnInit {
 	constructor(private entityServices: EntityServices, private store: Store<any>) {}
 
 	ngOnInit() {}

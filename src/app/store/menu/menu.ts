@@ -5,16 +5,26 @@ export const menu: IWNRYNavItem = {
 	url: '/',
 	children: [
 		{
-			label: 'camera-test',
-			url: '/camera-test',
-			path: 'camera-test',
-			children: [],
-		},
-		{
-			label: 'camera-toggle',
-			url: '/camera-toggle',
-			path: 'camera-toggle',
-			children: [],
+			label: 'Gesichtserkennung',
+			url: '/facedetect',
+			path: 'facedetect',
+			icon: 'fa fa-user-circle',
+			children: [
+				{
+					label: 'OpenCV',
+					url: '/facedetect/opencv',
+					path: 'opencv',
+					icon: 'fa fa-smile',
+					children: [],
+				},
+				{
+					label: 'Tensorflow',
+					url: '/facedetect/tensorflow',
+					path: 'tensorflow',
+					icon: 'fa fa-meg',
+					children: [],
+				},
+			],
 		},
 	],
 };

@@ -2,11 +2,11 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 declare var cv: any;
 
 @Component({
-	selector: 'ocv-camera-toggle',
-	templateUrl: './camera-toggle.component.html',
-	styleUrls: ['./camera-toggle.component.scss'],
+	selector: 'ocv-facedetect-tensorflow',
+	templateUrl: './facedetect-tensorflow.component.html',
+	styleUrls: ['./facedetect-tensorflow.component.scss'],
 })
-export class OCVCameraToggleComponent implements OnInit {
+export class OCVFacedetectTensorFlowComponent implements OnInit {
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
 	@ViewChild('canvas', { static: true }) canvas: ElementRef;
 	@ViewChild('select', { static: true }) select: ElementRef;

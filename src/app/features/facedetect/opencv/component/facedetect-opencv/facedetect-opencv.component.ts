@@ -2,11 +2,11 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 declare var cv: any;
 
 @Component({
-	selector: 'ocv-camera-test',
-	templateUrl: './camera-test.component.html',
-	styleUrls: ['./camera-test.component.scss'],
+	selector: 'ocv-facedetect-opencv',
+	templateUrl: './facedetect-opencv.component.html',
+	styleUrls: ['./facedetect-opencv.component.scss'],
 })
-export class OCVCameraTestComponent implements OnInit {
+export class OCVFacedetectOpenCVComponent implements OnInit {
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
 	@ViewChild('canvas', { static: true }) canvas: ElementRef;
 

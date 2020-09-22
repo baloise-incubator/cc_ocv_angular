@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OCVCameraToggleComponent } from './camera-toggle.component';
+import { OCVFacedetectTensorFlowComponent } from './facedetect-tensorflow.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
 	imports: [CommonModule, FormsModule, ReactiveFormsModule],
-	declarations: [OCVCameraToggleComponent],
-	exports: [OCVCameraToggleComponent],
+	declarations: [OCVFacedetectTensorFlowComponent],
+	exports: [OCVFacedetectTensorFlowComponent],
 })
-export class OCVCameraToggleModule {}
+export class OCVFacedetectTensorFlowModule {}
