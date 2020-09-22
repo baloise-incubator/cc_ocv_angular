@@ -21,7 +21,7 @@ export const menu: IWNRYNavItem = {
 					label: 'Tensorflow',
 					url: '/facedetect/tensorflow',
 					path: 'tensorflow',
-					icon: 'fa fa-meg',
+					icon: 'fa fa-meh',
 					children: [],
 				},
 			],
