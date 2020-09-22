@@ -4,11 +4,12 @@
 		<div class="col">
 			<canvas #canvas class="vid"></canvas>
 		</div>
-		<div class="col" #buttonlist></div>
-		<div class="p-1">
-			<button class="btn btn-primary" (click)="changeCam()">Change Cam</button>&nbsp;&nbsp;
-			<select #select class="form-control" id="camera-list"> </select>
+		<div class="col">
+			Cameralist:<br />
+			{{ cameralist }}
+			<div *ngFor="let camera of cameralist | async">
+				<button class="btn btn-primary m-1 col" (click)="changeCam(camera.id)">{{ camera.label }}</button>
+			</div>
 		</div>
-		<div></div>
 	</div>
 </div>
