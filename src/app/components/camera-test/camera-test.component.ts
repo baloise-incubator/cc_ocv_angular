@@ -38,17 +38,39 @@ export class OCVCameraTestComponent implements OnInit {
 		});
 	};
 
+	createFileFromUrl = function (path, url, cvc, callback) {
+		let request = new XMLHttpRequest();
+		request.open('GET', url, true);
+		request.responseType = 'arraybuffer';
+		request.onload = function (ev) {
+			if (request.readyState === 4) {
+				if (request.status === 200) {
+					let data = new Uint8Array(request.response);
+					cvc.FS_createDataFile('/', path, data, true, false, false);
+					callback();
+				} else {
+					console.error('Failed to load ' + url + ' status: ' + request.status);
+				}
+			}
+		};
+		request.send();
+	};
+
 	constructor(private renderer: Renderer2) {}
 
 	ngOnInit() {
 		this.startCamera();
 		this.loadScript('/assets/opencv.js').then((x) => {
 			console.log('OpenCV geladen');
-			console.log('x', cv);
+			console.log('cv', cv);
 			cv.then((x) => {
-				console.log('xx', cv);
-				this.openCVLoaded = true;
-				this.faceDetect(x);
+				let faceCascadeFile = 'haarcascade_frontalface_default.xml';
+				this.createFileFromUrl(faceCascadeFile, 'assets/' + faceCascadeFile, x, () => {
+					console.log('cascade ready to load.');
+					console.log('x', x);
+					this.openCVLoaded = true;
+					this.faceDetect(x);
+				});
 			});
 		});
 		// let cvTemp = (this.addJsToElement('/assets/opencv.js').onload = (teste) => {
@@ -97,6 +119,8 @@ export class OCVCameraTestComponent implements OnInit {
 
 	faceDetect(cv: any) {
 		let video: any = this.videoElement.nativeElement;
+		video.height = video.videoHeight;
+		video.width = video.videoWidth;
 		let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
 		let dst = new cv.Mat(video.height, video.width, cv.CV_8UC4);
 		let gray = new cv.Mat();
@@ -105,21 +129,21 @@ export class OCVCameraTestComponent implements OnInit {
 		let classifier = new cv.CascadeClassifier();
 
 		// load pre-trained classifiers
-		classifier.load('/assets/haarcascade_frontalface_default.xml');
-		console.log('classifier', classifier);
-		const FPS = 30;
+		const loaded = classifier.load('haarcascade_frontalface_default.xml');
+		console.log('classifier', loaded, classifier);
+		const FPS = 1;
 		function processVideo() {
 			console.log('streaming', this.streaming);
 			try {
-				if (!this.streaming) {
-					// clean and stop.
-					src.delete();
-					dst.delete();
-					gray.delete();
-					faces.delete();
-					classifier.delete();
-					return;
-				}
+				// if (!this.streaming) {
+				// 	// clean and stop.
+				// 	src.delete();
+				// 	dst.delete();
+				// 	gray.delete();
+				// 	faces.delete();
+				// 	classifier.delete();
+				// 	return;
+				// }
 				let begin = Date.now();
 				// start processing.
 				cap.read(src);
@@ -134,7 +158,7 @@ export class OCVCameraTestComponent implements OnInit {
 					let point2 = new cv.Point(face.x + face.width, face.y + face.height);
 					cv.rectangle(dst, point1, point2, [255, 0, 0, 255]);
 				}
-				cv.imshow('canvas', dst);
+				cv.imshow('canvasOutput', dst);
 				// schedule the next one.
 				let delay = 1000 / FPS - (Date.now() - begin);
 				setTimeout(processVideo, delay);
