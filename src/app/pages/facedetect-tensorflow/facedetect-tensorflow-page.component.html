@@ -1,4 +1,5 @@
 <wnry-page-with-title [title]="title">
-	<ocv-camera-selector-container></ocv-camera-selector-container>
-	<ocv-facedetect-tensorflow-container></ocv-facedetect-tensorflow-container>
+	<ocv-camera-selector-container (selectMediaDevice)="setCamera($event)"></ocv-camera-selector-container>
+	<div>&nbsp;</div>
+	<ocv-facedetect-tensorflow-container [camera]="camera"></ocv-facedetect-tensorflow-container>
 </wnry-page-with-title>

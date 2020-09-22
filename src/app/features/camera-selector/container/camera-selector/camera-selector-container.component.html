@@ -1,7 +1,8 @@
-<div *ngFor="let mediaDevice of mediaDevices$ | async">
+<div *ngFor="let mediaDevice of mediaDevices$ | async" style="display: inline;">
 	<ocv-camera-selector-row
 		*ngIf="mediaDevice.kind == 'videoinput'"
 		[mediaDevice]="mediaDevice"
 		(click)="changeCamera(mediaDevice)"
+		class="p-1"
 	></ocv-camera-selector-row>
 </div>

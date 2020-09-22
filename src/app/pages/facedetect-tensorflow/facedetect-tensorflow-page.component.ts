@@ -11,10 +11,15 @@ import { selectWNRYRouteId } from '@wnry/angular-lib';
 export class OCVFacedetectTensorFlowPageComponent implements OnInit {
 	title: string = 'Facedetection with TensorFlow';
 	routeId$: Observable<any>;
+	camera: MediaDeviceInfo;
 
 	constructor(private store: Store<any>) {}
 
 	ngOnInit() {
 		this.routeId$ = this.store.pipe(select(selectWNRYRouteId));
+	}
+
+	setCamera(event: MediaDeviceInfo) {
+		this.camera = event;
 	}
 }

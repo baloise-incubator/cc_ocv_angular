@@ -1,7 +1,6 @@
-import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild, Input } from '@angular/core';
 import * as blazeface from '@tensorflow-models/blazeface';
 import '@tensorflow/tfjs-backend-webgl';
-import { Observable, of } from 'rxjs';
 
 @Component({
 	selector: 'ocv-facedetect-tensorflow',
@@ -9,6 +8,11 @@ import { Observable, of } from 'rxjs';
 	styleUrls: ['./facedetect-tensorflow.component.scss'],
 })
 export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
+	@Input()
+	set camera(c: MediaDeviceInfo) {
+		this.changeCam(c.deviceId);
+	}
+
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
 	@ViewChild('canvas', { static: true }) canvas: ElementRef;
 
@@ -20,22 +24,23 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 	constraints = {
 		video: {
 			facingMode: 'environment',
-			width: { ideal: 4096 },
-			height: { ideal: 2160 },
+			width: { ideal: 1024 },
+			height: { ideal: 768 },
 			deviceId: null,
+			aspectRatio: 1.3333333,
 		},
 	};
+
+	//width: { ideal: 4096 },
+	//height: { ideal: 2160 },
 
 	// Model Vars
 	model: any;
 	loading: boolean;
 
-	cameralist: Promise<any[]>;
-
 	constructor(private renderer: Renderer2) {}
 
 	ngOnInit() {
-		this.listCameras();
 		this.loadModel();
 	}
 
@@ -84,8 +89,9 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 
 	drawdot(ctx, coords) {
 		ctx.beginPath();
-		ctx.arc(coords[0], coords[1], 70, 0, 2 * Math.PI);
+		ctx.arc(coords[0], coords[1], 50, 0, 2 * Math.PI);
 		ctx.globalAlpha = 0.3;
+		ctx.fillStyle = 'blue';
 		ctx.fill();
 		ctx.globalAlpha = 1;
 		ctx.lineWidth = 5;
@@ -100,34 +106,13 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 				.then((stream) => {
 					this.attachVideo(stream);
 					this.currentStream = stream;
+
 					console.log('');
 				})
 				.catch(this.handleError);
 		} else {
 			alert('Sorry, camera not available.');
 		}
-	}
-
-	listCameras() {
-		var count = 1;
-		var output = [];
-
-		navigator.mediaDevices.enumerateDevices().then((md) => {
-			md.forEach((mediaDevice) => {
-				if (mediaDevice.kind === 'videoinput') {
-					var label = mediaDevice.label || `Camera ${count++}`;
-					var id = mediaDevice.deviceId;
-					var camera = {
-						label,
-						id,
-					};
-					output.push(camera);
-				}
-			});
-		});
-		//this.cameralist = of(output);
-		//this.cameralist = navigator.mediaDevices.enumerateDevices();
-		console.log(this.cameralist);
 	}
 
 	handleError(error) {

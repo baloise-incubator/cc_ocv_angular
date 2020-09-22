@@ -9,6 +9,9 @@ import { EntityCollectionService, EntityServices } from '@ngrx/data';
 	styleUrls: ['./facedetect-tensorflow-container.component.scss'],
 })
 export class OCVFacedetectTensorFlowContainerComponent implements OnInit {
+	@Input()
+	camera: MediaDeviceInfo;
+
 	constructor(private entityServices: EntityServices, private store: Store<any>) {}
 
 	ngOnInit() {}
