@@ -1,11 +1,11 @@
 <div class="container vh-100">
 	<div class="d-flex flex-column align-items-center">
-		<div class="p-1">
-			<video #video class="vid" autoplay></video>&nbsp;
+		<div class="col hide"><video #video class="vid hide" autoplay></video>&nbsp;</div>
+		<div class="col">
 			<canvas #canvas class="vid"></canvas>
 		</div>
+		<div class="col" #buttonlist></div>
 		<div class="p-1">
-			<button class="btn btn-primary" (click)="capture()">Capture Image</button>&nbsp;&nbsp;
 			<button class="btn btn-primary" (click)="changeCam()">Change Cam</button>&nbsp;&nbsp;
 			<select #select class="form-control" id="camera-list"> </select>
 		</div>
