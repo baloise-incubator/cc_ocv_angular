@@ -33,15 +33,17 @@ const routes: Routes = [
 				outlet: 'rightHeader',
 			},
 			{
-				path: 'camera-test',
+				path: 'facedetect/opencv',
 				loadChildren: () =>
-					import('./pages/camera-test/camera-test-page.module').then((m) => m.OCVCameraTestPageModule),
+					import('./pages/facedetect-opencv/facedetect-opencv-page.module').then(
+						(m) => m.OCVFacedetectOpenCVPageModule
+					),
 			},
 			{
-				path: 'camera-toggle',
+				path: 'facedetect/tensorflow',
 				loadChildren: () =>
 					import('./pages/facedetect-tensorflow/facedetect-tensorflow-page.module').then(
-						(m) => m.OCVCameraTogglePageModule
+						(m) => m.OCVFacedetectTensorFlowPageModule
 					),
 			},
 			{

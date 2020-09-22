@@ -9,7 +9,7 @@ import { selectWNRYRouteId } from '@wnry/angular-lib';
 	styleUrls: ['./facedetect-tensorflow-page.component.scss'],
 })
 export class OCVFacedetectTensorFlowPageComponent implements OnInit {
-	title: string = 'camera-test';
+	title: string = 'Facedetection with TensorFlow';
 	routeId$: Observable<any>;
 
 	constructor(private store: Store<any>) {}

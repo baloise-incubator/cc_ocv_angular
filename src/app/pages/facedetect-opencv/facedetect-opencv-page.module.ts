@@ -15,4 +15,4 @@ const routes: Routes = [
 	imports: [CommonModule, RouterModule.forChild(routes), WNRYPageWithTitleModule, OCVFacedetectOpenCVContainerModule],
 	declarations: [OCVFacedetectOpenCVPageComponent],
 })
-export class OCVFacedetectOpenCVPageComponentPageModule {}
+export class OCVFacedetectOpenCVPageModule {}

@@ -9,7 +9,7 @@ import { selectWNRYRouteId } from '@wnry/angular-lib';
 	styleUrls: ['./facedetect-opencv-page.component.scss'],
 })
 export class OCVFacedetectOpenCVPageComponent implements OnInit {
-	title: string = 'facedetect-opencv';
+	title: string = 'Facedetection with OpenCV';
 	routeId$: Observable<any>;
 
 	constructor(private store: Store<any>) {}
