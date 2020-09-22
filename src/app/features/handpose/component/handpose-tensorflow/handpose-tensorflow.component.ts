@@ -10,7 +10,7 @@ import '@tensorflow/tfjs-backend-webgl';
 export class OCVHandposeTensorFlowComponent implements OnInit, AfterViewInit {
 	@Input()
 	set camera(c: MediaDeviceInfo) {
-		this.changeCam(c.deviceId);
+		if (c) this.changeCam(c.deviceId);
 	}
 
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
@@ -20,6 +20,7 @@ export class OCVHandposeTensorFlowComponent implements OnInit, AfterViewInit {
 	videoWidth = 0;
 	videoHeight = 0;
 	currentStream: any;
+	camerastarted = false;
 
 	constraints = {
 		video: {
@@ -54,49 +55,51 @@ export class OCVHandposeTensorFlowComponent implements OnInit, AfterViewInit {
 		this.loading = false;
 
 		setInterval(async () => {
-			const predictions = await this.model.estimateHands(this.videoElement.nativeElement);
+			if (this.camerastarted) {
+				const predictions = await this.model.estimateHands(this.videoElement.nativeElement);
 
-			this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
-			this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
-			this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
+				this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
+				this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
+				this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
 
-			if (predictions.length > 0) {
-				for (let i = 0; i < predictions.length; i++) {
-					var ctx = this.canvas.nativeElement.getContext('2d');
-					const keypoints = predictions[i].landmarks;
+				if (predictions.length > 0) {
+					for (let i = 0; i < predictions.length; i++) {
+						var ctx = this.canvas.nativeElement.getContext('2d');
+						const keypoints = predictions[i].landmarks;
 
-					// Log hand keypoints.
-					for (let i = 0; i < keypoints.length; i++) {
-						this.drawdot(ctx, keypoints[i]);
+						// Log hand keypoints.
+						for (let i = 0; i < keypoints.length; i++) {
+							this.drawdot(ctx, keypoints[i]);
+						}
+						// Daumen
+						this.drawline(ctx, keypoints[0], keypoints[1]);
+						this.drawline(ctx, keypoints[1], keypoints[2]);
+						this.drawline(ctx, keypoints[2], keypoints[3]);
+						this.drawline(ctx, keypoints[3], keypoints[4]);
+						//Zeigefinger
+						this.drawline(ctx, keypoints[0], keypoints[5]);
+						this.drawline(ctx, keypoints[5], keypoints[6]);
+						this.drawline(ctx, keypoints[6], keypoints[7]);
+						this.drawline(ctx, keypoints[7], keypoints[8]);
+						//Mittelfinger
+						this.drawline(ctx, keypoints[0], keypoints[9]);
+						this.drawline(ctx, keypoints[9], keypoints[10]);
+						this.drawline(ctx, keypoints[10], keypoints[11]);
+						this.drawline(ctx, keypoints[11], keypoints[12]);
+						//Ringfinger
+						this.drawline(ctx, keypoints[0], keypoints[13]);
+						this.drawline(ctx, keypoints[13], keypoints[14]);
+						this.drawline(ctx, keypoints[14], keypoints[15]);
+						this.drawline(ctx, keypoints[15], keypoints[16]);
+						//Ringfinger
+						this.drawline(ctx, keypoints[0], keypoints[17]);
+						this.drawline(ctx, keypoints[17], keypoints[18]);
+						this.drawline(ctx, keypoints[18], keypoints[19]);
+						this.drawline(ctx, keypoints[19], keypoints[20]);
 					}
-					// Daumen
-					this.drawline(ctx, keypoints[0], keypoints[1]);
-					this.drawline(ctx, keypoints[1], keypoints[2]);
-					this.drawline(ctx, keypoints[2], keypoints[3]);
-					this.drawline(ctx, keypoints[3], keypoints[4]);
-					//Zeigefinger
-					this.drawline(ctx, keypoints[0], keypoints[5]);
-					this.drawline(ctx, keypoints[5], keypoints[6]);
-					this.drawline(ctx, keypoints[6], keypoints[7]);
-					this.drawline(ctx, keypoints[7], keypoints[8]);
-					//Mittelfinger
-					this.drawline(ctx, keypoints[0], keypoints[9]);
-					this.drawline(ctx, keypoints[9], keypoints[10]);
-					this.drawline(ctx, keypoints[10], keypoints[11]);
-					this.drawline(ctx, keypoints[11], keypoints[12]);
-					//Ringfinger
-					this.drawline(ctx, keypoints[0], keypoints[13]);
-					this.drawline(ctx, keypoints[13], keypoints[14]);
-					this.drawline(ctx, keypoints[14], keypoints[15]);
-					this.drawline(ctx, keypoints[15], keypoints[16]);
-					//Ringfinger
-					this.drawline(ctx, keypoints[0], keypoints[17]);
-					this.drawline(ctx, keypoints[17], keypoints[18]);
-					this.drawline(ctx, keypoints[18], keypoints[19]);
-					this.drawline(ctx, keypoints[19], keypoints[20]);
 				}
 			}
-		}, 200);
+		}, 100);
 	}
 
 	drawline(ctx, coords_from, coords_to) {
@@ -144,6 +147,7 @@ export class OCVHandposeTensorFlowComponent implements OnInit, AfterViewInit {
 			this.videoHeight = this.videoElement.nativeElement.videoHeight;
 			this.videoWidth = this.videoElement.nativeElement.videoWidth;
 		});
+		this.camerastarted = true;
 	}
 
 	changeCam(deviceId) {

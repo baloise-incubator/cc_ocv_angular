@@ -10,7 +10,7 @@ import '@tensorflow/tfjs-backend-webgl';
 export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 	@Input()
 	set camera(c: MediaDeviceInfo) {
-		this.changeCam(c.deviceId);
+		if (c) this.changeCam(c.deviceId);
 	}
 
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
@@ -20,6 +20,7 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 	videoWidth = 0;
 	videoHeight = 0;
 	currentStream: any;
+	camerastarted = false;
 
 	constraints = {
 		video: {
@@ -54,34 +55,36 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 		this.loading = false;
 
 		setInterval(async () => {
-			//blazeface
-			const returnTensors = false; // Pass in `true` to get tensors back, rather than values.
-			const predictions = await this.model.estimateFaces(this.videoElement.nativeElement, returnTensors);
+			if (this.camerastarted) {
+				//blazeface
+				const returnTensors = false; // Pass in `true` to get tensors back, rather than values.
+				const predictions = await this.model.estimateFaces(this.videoElement.nativeElement, returnTensors);
 
-			this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
-			this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
-			this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
+				this.renderer.setProperty(this.canvas.nativeElement, 'width', this.videoWidth);
+				this.renderer.setProperty(this.canvas.nativeElement, 'height', this.videoHeight);
+				this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
 
-			if (predictions.length > 0) {
-				for (let i = 0; i < predictions.length; i++) {
-					const start = predictions[i].topLeft;
-					const end = predictions[i].bottomRight;
-					const size = [end[0] - start[0], end[1] - start[1]];
+				if (predictions.length > 0) {
+					for (let i = 0; i < predictions.length; i++) {
+						const start = predictions[i].topLeft;
+						const end = predictions[i].bottomRight;
+						const size = [end[0] - start[0], end[1] - start[1]];
 
-					const eye_right = predictions[i].landmarks[0];
-					const eye_left = predictions[i].landmarks[1];
-					const nose = predictions[i].landmarks[2];
-					const mouth = predictions[i].landmarks[3];
-					const ear_right = predictions[i].landmarks[4];
-					const ear_left = predictions[i].landmarks[5];
+						const eye_right = predictions[i].landmarks[0];
+						const eye_left = predictions[i].landmarks[1];
+						const nose = predictions[i].landmarks[2];
+						const mouth = predictions[i].landmarks[3];
+						const ear_right = predictions[i].landmarks[4];
+						const ear_left = predictions[i].landmarks[5];
 
-					var ctx = this.canvas.nativeElement.getContext('2d');
-					// Render a rectangle over each detected face.
-					//ctx.globalAlpha = 0.3;
-					//ctx.fillStyle = 'blue';
-					//ctx.fillRect(start[0], start[1], size[0], size[1]);
-					this.drawdot(ctx, eye_right);
-					this.drawdot(ctx, eye_left);
+						var ctx = this.canvas.nativeElement.getContext('2d');
+						// Render a rectangle over each detected face.
+						//ctx.globalAlpha = 0.3;
+						//ctx.fillStyle = 'blue';
+						//ctx.fillRect(start[0], start[1], size[0], size[1]);
+						this.drawdot(ctx, eye_right);
+						this.drawdot(ctx, eye_left);
+					}
 				}
 			}
 		}, 100);
@@ -89,7 +92,7 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 
 	drawdot(ctx, coords) {
 		ctx.beginPath();
-		ctx.arc(coords[0], coords[1], 50, 0, 2 * Math.PI);
+		ctx.arc(coords[0], coords[1], 40, 0, 2 * Math.PI);
 		ctx.globalAlpha = 0.3;
 		ctx.fillStyle = 'blue';
 		ctx.fill();
@@ -106,7 +109,6 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 				.then((stream) => {
 					this.attachVideo(stream);
 					this.currentStream = stream;
-
 					console.log('');
 				})
 				.catch(this.handleError);
@@ -125,6 +127,7 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 			this.videoHeight = this.videoElement.nativeElement.videoHeight;
 			this.videoWidth = this.videoElement.nativeElement.videoWidth;
 		});
+		this.camerastarted = true;
 	}
 
 	changeCam(deviceId) {
