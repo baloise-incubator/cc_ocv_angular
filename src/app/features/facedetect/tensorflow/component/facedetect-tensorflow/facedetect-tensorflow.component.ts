@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild } from '@angular/core';
 import * as blazeface from '@tensorflow-models/blazeface';
 import '@tensorflow/tfjs-backend-webgl';
+import { Observable, of } from 'rxjs';
 
 @Component({
 	selector: 'ocv-facedetect-tensorflow',
@@ -10,7 +11,6 @@ import '@tensorflow/tfjs-backend-webgl';
 export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 	@ViewChild('video', { static: true }) videoElement: ElementRef;
 	@ViewChild('canvas', { static: true }) canvas: ElementRef;
-	@ViewChild('select', { static: true }) select: ElementRef;
 
 	// Video Vars
 	videoWidth = 0;
@@ -29,6 +29,8 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 	// Model Vars
 	model: any;
 	loading: boolean;
+
+	cameralist: Promise<any[]>;
 
 	constructor(private renderer: Renderer2) {}
 
@@ -56,26 +58,6 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 			this.canvas.nativeElement.getContext('2d').drawImage(this.videoElement.nativeElement, 0, 0);
 
 			if (predictions.length > 0) {
-				/*
-				`predictions` is an array of objects describing each detected face, for example:
-
-				[
-				{
-					topLeft: [232.28, 145.26],
-					bottomRight: [449.75, 308.36],
-					probability: [0.998],
-					landmarks: [
-					[295.13, 177.64], // right eye
-					[382.32, 175.56], // left eye
-					[341.18, 205.03], // nose
-					[345.12, 250.61], // mouth
-					[252.76, 211.37], // right ear
-					[431.20, 204.93] // left ear
-					]
-				}
-				]
-				*/
-
 				for (let i = 0; i < predictions.length; i++) {
 					const start = predictions[i].topLeft;
 					const end = predictions[i].bottomRight;
@@ -83,6 +65,10 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 
 					const eye_right = predictions[i].landmarks[0];
 					const eye_left = predictions[i].landmarks[1];
+					const nose = predictions[i].landmarks[2];
+					const mouth = predictions[i].landmarks[3];
+					const ear_right = predictions[i].landmarks[4];
+					const ear_left = predictions[i].landmarks[5];
 
 					// Render a rectangle over each detected face.
 					var ctx = this.canvas.nativeElement.getContext('2d');
@@ -123,22 +109,25 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 	}
 
 	listCameras() {
-		var select = this.select.nativeElement;
-		select.innerHtml = '';
-		//select.appendChild(document.createElement('option'));
-		let count = 1;
+		var count = 1;
+		var output = [];
+
 		navigator.mediaDevices.enumerateDevices().then((md) => {
 			md.forEach((mediaDevice) => {
 				if (mediaDevice.kind === 'videoinput') {
-					const option = document.createElement('option');
-					option.value = mediaDevice.deviceId;
-					const label = mediaDevice.label || `Camera ${count++}`;
-					const textNode = document.createTextNode(label);
-					option.appendChild(textNode);
-					select.appendChild(option);
+					var label = mediaDevice.label || `Camera ${count++}`;
+					var id = mediaDevice.deviceId;
+					var camera = {
+						label,
+						id,
+					};
+					output.push(camera);
 				}
 			});
 		});
+		//this.cameralist = of(output);
+		//this.cameralist = navigator.mediaDevices.enumerateDevices();
+		console.log(this.cameralist);
 	}
 
 	handleError(error) {
@@ -153,18 +142,18 @@ export class OCVFacedetectTensorFlowComponent implements OnInit, AfterViewInit {
 		});
 	}
 
-	changeCam() {
-		var select = this.select.nativeElement;
+	changeCam(deviceId) {
+		console.log('DeviceId', deviceId);
 		if (typeof this.currentStream !== 'undefined') {
 			this.currentStream.getTracks().forEach((track) => {
 				track.stop();
 			});
 		}
-		if (select.value === '') {
+		if (deviceId === '') {
 			this.constraints.video.facingMode = 'environment';
 			this.constraints.video.deviceId = null;
 		} else {
-			this.constraints.video.deviceId = { exact: select.value };
+			this.constraints.video.deviceId = { exact: deviceId };
 		}
 		this.startCamera();
 	}
