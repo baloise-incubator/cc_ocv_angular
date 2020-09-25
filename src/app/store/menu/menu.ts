@@ -31,6 +31,13 @@ export const menu: IWNRYNavItem = {
 					icon: 'fa fa-meh',
 					children: [],
 				},
+				{
+					label: 'TF MyModel',
+					url: '/detect/mymodel',
+					path: 'mymodel',
+					icon: 'fa fa-address-card',
+					children: [],
+				},
 			],
 		},
 	],

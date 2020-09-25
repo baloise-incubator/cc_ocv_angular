@@ -53,6 +53,13 @@ const routes: Routes = [
 						(m) => m.OCVHandposeTensorFlowPageModule
 					),
 			},
+			{
+				path: 'detect/mymodel',
+				loadChildren: () =>
+					import('./pages/mymodel-tensorflow/mymodel-tensorflow-page.module').then(
+						(m) => m.OCVMyModelTensorFlowPageModule
+					),
+			},
 
 			{
 				path: '**',
