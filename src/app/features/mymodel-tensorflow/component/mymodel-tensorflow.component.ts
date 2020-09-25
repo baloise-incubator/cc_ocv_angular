@@ -40,8 +40,8 @@ export class OCVMyModelTensorFlowComponent implements OnInit, AfterViewInit {
 	model: any;
 	loading: boolean;
 
-	modelURL = 'assets/model.json';
-	metadataURL = 'assets/metadata.json';
+	modelURL = 'assets/image-segmentation/model.json';
+	metadataURL = 'assets/image-segmentation/metadata.json';
 
 	constructor(private renderer: Renderer2) {}
 
@@ -56,7 +56,8 @@ export class OCVMyModelTensorFlowComponent implements OnInit, AfterViewInit {
 	async loadModel() {
 		this.loading = true;
 
-		this.model = await tmImage.load(this.modelURL, this.metadataURL);
+		//this.model = await tmImage.load(this.modelURL, this.metadataURL);
+		this.model = await tf.loadLayersModel(this.modelURL);
 
 		//this.model = await tf.loadLayersModel(this.MODEL_URL);
 		console.log('model', this.model);
@@ -65,8 +66,6 @@ export class OCVMyModelTensorFlowComponent implements OnInit, AfterViewInit {
 
 		setInterval(async () => {
 			if (this.camerastarted) {
-				const maxPredictions = this.model.getTotalClasses();
-
 				const predictions = await this.model.predict(this.videoElement.nativeElement);
 				console.log('predictions', predictions);
 			}
